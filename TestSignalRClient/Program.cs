@@ -13,10 +13,7 @@ namespace TestSignalRClient
         {
             var hubConnection = new HubConnectionBuilder()
                                  .WithUrl("https://localhost:5001/testhub")
-                                 .AddNewtonsoftJsonProtocol(options =>
-                                 {
-                                     options.PayloadSerializerSettings.ContractResolver = new DefaultContractResolver();
-                                 })
+                                 .AddNewtonsoftJsonProtocol()
                                  .WithAutomaticReconnect()
                                  .Build();
 
@@ -28,7 +25,7 @@ namespace TestSignalRClient
                 await hubConnection.SendAsync("TestUpstream", channel.Reader);
                 await channel.Writer.WriteAsync("some data");
                 await channel.Writer.WriteAsync("some more data");
-                channel.Writer.Complete();
+                channel.Writer.Complete(new Exception("an error occurred"));
             }).Wait();
 
             Console.ReadKey();
